@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bloc 2 — Modele TAM | VR Volleyball</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap');
+
+  :root {
+    --bg: #F7F6F3;
+    --surface: #FFFFFF;
+    --border: #DDDBD6;
+    --border-strong: #BBBAB5;
+    --text: #1A1916;
+    --text-secondary: #6B6963;
+    --text-muted: #9B9A96;
+    --accent: #1A1916;
+    --accent-light: #F0EFEC;
+    --ink: #2D2B27;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    min-height: 100vh;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 28px 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .sidebar-header {
+    padding: 0 20px 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+
+  .sidebar-header .module {
+    font-size: 10px;
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--text-muted);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .sidebar-header h1 {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--text);
+  }
+
+  .sidebar-header p {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 20px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    transition: background .12s;
+    border-left: 2px solid transparent;
+  }
+
+  .nav-item:hover { background: var(--accent-light); }
+
+  .nav-item.active {
+    background: var(--accent-light);
+    border-left-color: var(--accent);
+  }
+
+  .nav-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    width: 20px;
+    flex-shrink: 0;
+  }
+
+  .nav-item.active .nav-num { color: var(--accent); }
+
+  .nav-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    line-height: 1.3;
+  }
+
+  .nav-item.active .nav-label { color: var(--text); }
+
+  .nav-sub {
+    font-size: 10px;
+    color: var(--text-muted);
+    display: block;
+    font-weight: 400;
+  }
+
+  /* MAIN */
+  .main {
+    padding: 36px 40px;
+    max-width: 900px;
+  }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .page-header {
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .page-kicker {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .page-title {
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
+
+  .page-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    max-width: 620px;
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 18px 20px;
+    margin-bottom: 16px;
+  }
+
+  .card-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+
+  .card h3 {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  /* TAM MODEL */
+  .tam-diagram {
+    display: grid;
+    grid-template-columns: 1fr 32px 1fr 32px 1fr;
+    gap: 8px;
+    align-items: center;
+    margin: 12px 0;
+  }
+
+  .tam-col { display: flex; flex-direction: column; gap: 8px; }
+
+  .tam-box {
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 10px 12px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 500;
+    background: var(--surface);
+  }
+
+  .tam-box.classic {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+
+  .tam-box.outcome {
+    background: var(--ink);
+    color: #fff;
+    border-color: var(--ink);
+    padding: 18px 12px;
+  }
+
+  .tam-box sub {
+    font-size: 10px;
+    font-weight: 400;
+    display: block;
+    opacity: .75;
+    margin-top: 2px;
+  }
+
+  .tam-arrow {
+    text-align: center;
+    font-size: 18px;
+    color: var(--text-muted);
+  }
+
+  /* CONSTRUCTS */
+  .construct-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .construct-card {
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 13px 14px;
+    background: var(--surface);
+  }
+
+  .construct-code {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-bottom: 3px;
+  }
+
+  .construct-name {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 5px;
+  }
+
+  .construct-def {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: 6px;
+  }
+
+  .tag {
+    display: inline-block;
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    margin-right: 3px;
+  }
+
+  .tag.dark {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+
+  /* HYPOTHESIS */
+  .hyp-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .hyp {
+    display: flex;
+    gap: 12px;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 13px 14px;
+    background: var(--surface);
+  }
+
+  .hyp-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 3px;
+    padding: 3px 6px;
+    min-width: 28px;
+    text-align: center;
+    flex-shrink: 0;
+    height: fit-content;
+    margin-top: 1px;
+  }
+
+  .hyp-main {
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 4px;
+    line-height: 1.4;
+  }
+
+  .hyp-ref {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  /* TABLE */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+
+  th {
+    background: var(--accent-light);
+    padding: 8px 12px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 11px;
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  td {
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    vertical-align: top;
+    line-height: 1.5;
+    color: var(--text-secondary);
+  }
+
+  tr:nth-child(even) td { background: var(--accent-light); }
+
+  /* ITEMS */
+  .item-block {
+    background: var(--accent-light);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+  }
+
+  .item-block h4 {
+    font-size: 11px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-family: 'IBM Plex Mono', monospace;
+    letter-spacing: .05em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+
+  .item-row {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: 8px;
+    margin-bottom: 5px;
+    align-items: start;
+  }
+
+  .item-n {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    text-align: center;
+    padding: 3px 0;
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+
+  .item-text { font-size: 12px; line-height: 1.5; color: var(--text-secondary); }
+
+  /* LIKERT */
+  .likert-demo {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin: 10px 0;
+    flex-wrap: wrap;
+  }
+
+  .likert-end {
+    font-size: 10px;
+    color: var(--text-muted);
+    min-width: 80px;
+  }
+
+  .likert-end:last-child { text-align: right; }
+
+  .likert-pt {
+    flex: 1;
+    text-align: center;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 6px 2px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    background: var(--surface);
+    color: var(--text-secondary);
+    min-width: 28px;
+  }
+
+  /* STATS */
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .stat-box {
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 14px;
+    text-align: center;
+    background: var(--surface);
+  }
+
+  .stat-val {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 3px;
+  }
+
+  .stat-lbl { font-size: 11px; color: var(--text-secondary); }
+  .stat-threshold { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+
+  /* IMPL */
+  .impl {
+    display: flex;
+    gap: 12px;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 13px 14px;
+    margin-bottom: 10px;
+    background: var(--surface);
+  }
+
+  .impl-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    border: 1px solid var(--border-strong);
+    border-radius: 3px;
+    padding: 3px 6px;
+    min-width: 28px;
+    text-align: center;
+    flex-shrink: 0;
+    height: fit-content;
+    margin-top: 1px;
+    color: var(--text);
+  }
+
+  .impl-title {
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: var(--text);
+  }
+
+  .impl-body {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.55;
+  }
+
+  /* NAVIGATION BUTTONS */
+  .nav-btns {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+
+  .btn {
+    padding: 8px 20px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--surface);
+    color: var(--text-secondary);
+    font-size: 12px;
+    cursor: pointer;
+    font-family: 'IBM Plex Sans', sans-serif;
+    transition: background .12s;
+  }
+
+  .btn:hover { background: var(--accent-light); }
+
+  .btn.primary {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+
+  .btn.primary:hover { opacity: .88; }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 16px 0;
+  }
+
+  @media (max-width: 700px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { height: auto; position: static; }
+    .main { padding: 20px; }
+    .construct-grid, .tam-diagram, .stat-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="sidebar-header">
+      <div class="module">Bloc 2 — Sem. 5-7</div>
+      <h1>Modelisation TAM</h1>
+      <p>VR immersive & volleyball amateur</p>
+    </div>
+
+    <button class="nav-item active" onclick="go(0)">
+      <span class="nav-num">01</span>
+      <span class="nav-label">Modele conceptuel<span class="nav-sub">6 construits, schema TAM</span></span>
+    </button>
+    <button class="nav-item" onclick="go(1)">
+      <span class="nav-num">02</span>
+      <span class="nav-label">Hypotheses<span class="nav-sub">7 relations directionnelles</span></span>
+    </button>
+    <button class="nav-item" onclick="go(2)">
+      <span class="nav-num">03</span>
+      <span class="nav-label">Questionnaire<span class="nav-sub">28 items, Likert 7 pts</span></span>
+    </button>
+    <button class="nav-item" onclick="go(3)">
+      <span class="nav-num">04</span>
+      <span class="nav-label">Collecte des donnees<span class="nav-sub">n ≥ 80, RGPD</span></span>
+    </button>
+    <button class="nav-item" onclick="go(4)">
+      <span class="nav-num">05</span>
+      <span class="nav-label">Analyse statistique<span class="nav-sub">PLS-SEM, SmartPLS 4</span></span>
+    </button>
+    <button class="nav-item" onclick="go(5)">
+      <span class="nav-num">06</span>
+      <span class="nav-label">Implications design<span class="nav-sub">Lien TAM → Prototype</span></span>
+    </button>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- PANEL 1 -->
+    <div id="p0" class="panel active">
+      <div class="page-header">
+        <div class="page-kicker">Etape 1 — Modele conceptuel</div>
+        <div class="page-title">Construire le modele TAM etendu</div>
+        <p class="page-desc">Le TAM de Davis (1989) est etendu avec quatre construits specifiques au contexte sportif immersif. Minimum requis : 4 construits, 6 hypotheses. Ce projet en propose 6 et 7.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Schema du modele</div>
+        <div class="tam-diagram">
+          <div class="tam-col">
+            <div class="tam-box" style="font-size:11px">Immersion percue<sub>IP</sub></div>
+            <div class="tam-box" style="font-size:11px">Presence sociale<sub>PS</sub></div>
+            <div class="tam-box" style="font-size:11px">Engagement corporel<sub>EC</sub></div>
+            <div class="tam-box" style="font-size:11px">Anxiete technologique<sub>AT</sub></div>
+          </div>
+          <div class="tam-arrow">→</div>
+          <div class="tam-col">
+            <div class="tam-box classic">PEOU<sub>Facilite percue</sub></div>
+            <div style="height:8px"></div>
+            <div class="tam-box classic">PU<sub>Utilite percue</sub></div>
+          </div>
+          <div class="tam-arrow">→</div>
+          <div class="tam-box outcome">BI<sub>Intention d'usage</sub></div>
+        </div>
+        <p style="font-size:11px;color:var(--text-muted);text-align:center;margin-top:8px">Davis (1989) — etendu pour le contexte VR sportif collectif | Produire avec draw.io</p>
+      </div>
+
+      <div class="construct-grid">
+        <div class="construct-card">
+          <div class="construct-code">PEOU — TAM classique</div>
+          <div class="construct-name">Facilite d'utilisation percue</div>
+          <div class="construct-def">Degre auquel un volleyeur pense que le dispositif VR ne necessite pas d'effort particulier pour etre utilise.</div>
+          <span class="tag dark">Davis 1989</span>
+        </div>
+        <div class="construct-card">
+          <div class="construct-code">PU — TAM classique</div>
+          <div class="construct-name">Utilite percue</div>
+          <div class="construct-def">Degre auquel le volleyeur pense que la VR ameliore sa performance tactique reelle en match.</div>
+          <span class="tag dark">Davis 1989</span>
+        </div>
+        <div class="construct-card">
+          <div class="construct-code">IP — Construit etendu</div>
+          <div class="construct-name">Immersion percue</div>
+          <div class="construct-def">Sentiment d'etre physiquement present dans l'environnement VR du terrain de volleyball. Qualite du sentiment de presence.</div>
+          <span class="tag">Evaggelia 2024</span><span class="tag">Richlan 2023</span>
+        </div>
+        <div class="construct-card">
+          <div class="construct-code">PS — Construit etendu</div>
+          <div class="construct-name">Presence sociale</div>
+          <div class="construct-def">Sensation d'interagir avec des coequipiers virtuels dans les scenarios de volleyball collectif immersif.</div>
+          <span class="tag">Vu 2022</span>
+        </div>
+        <div class="construct-card">
+          <div class="construct-code">EC — Construit etendu</div>
+          <div class="construct-name">Engagement corporel</div>
+          <div class="construct-def">Degre d'implication physique du corps dans l'interaction VR : gestes, deplacement, posture pendant les scenarios.</div>
+          <span class="tag">Pastel 2023</span>
+        </div>
+        <div class="construct-card">
+          <div class="construct-code">AT — Construit etendu</div>
+          <div class="construct-name">Anxiete technologique</div>
+          <div class="construct-def">Apprehension face au casque VR, risque de cybersickness, ou malaise lors de la manipulation du dispositif immersif.</div>
+          <span class="tag">Hornsey 2024</span>
+        </div>
+      </div>
+
+      <div class="nav-btns">
+        <span></span>
+        <button class="btn primary" onclick="go(1)">Etape 2 — Hypotheses &rarr;</button>
+      </div>
+    </div>
+
+    <!-- PANEL 2 -->
+    <div id="p1" class="panel">
+      <div class="page-header">
+        <div class="page-kicker">Etape 2 — Hypotheses</div>
+        <div class="page-title">7 hypotheses directionnelles</div>
+        <p class="page-desc">Chaque hypothese suit le format : "Hn : [construit A] influence [positivement / negativement] [construit B] dans un contexte VR sportif." Chaque relation est ancree sur au moins une reference du corpus PRISMA.</p>
+      </div>
+
+      <div class="hyp-list">
+        <div class="hyp">
+          <div class="hyp-badge">H1</div>
+          <div>
+            <div class="hyp-main">La PEOU influence positivement la PU de la VR en entrainement volleyball.</div>
+            <div class="hyp-ref">Ancre : Davis (1989) — relation fondatrice du TAM original, confirmee dans tous les contextes numeriques.</div>
+          </div>
+        </div>
+        <div class="hyp">
+          <div class="hyp-badge">H2</div>
+          <div>
+            <div class="hyp-main">La PEOU influence positivement l'intention d'usage (BI) de la VR immersive en volleyball.</div>
+            <div class="hyp-ref">Ancre : Davis (1989) — relation directe PEOU → BI documentee dans les meta-analyses TAM.</div>
+          </div>
+        </div>
+        <div class="hyp">
+          <div class="hyp-badge">H3</div>
+          <div>
+            <div class="hyp-main">La PU influence positivement l'intention d'usage (BI) de la VR immersive en entrainement volleyball.</div>
+            <div class="hyp-ref">Ancre : Davis (1989) — relation la plus robuste du TAM, validee dans la majorite des replications.</div>
+          </div>
+        </div>
+        <div class="hyp">
+          <div class="hyp-badge">H4</div>
+          <div>
+            <div class="hyp-main">L'immersion percue (IP) influence positivement l'intention d'usage (BI) de la VR en entrainement tactico-cognitif volleyball.</div>
+            <div class="hyp-ref">Ancre : Evaggelia et al. (2024) — effet de l'immersion sur l'engagement ; Richlan et al. (2023) — lien immersion et usage sportif.</div>
+          </div>
+        </div>
+        <div class="hyp">
+          <div class="hyp-badge">H5</div>
+          <div>
+            <div class="hyp-main">La presence sociale percue (PS) influence positivement l'intention d'usage (BI) de la VR en sport collectif.</div>
+            <div class="hyp-ref">Ancre : Vu et al. (2022) — importance du multi-joueurs VR en sport collectif et simulation des interactions sociales.</div>
+          </div>
+        </div>
+        <div class="hyp">
+          <div class="hyp-badge">H6</div>
+          <div>
+            <div class="hyp-main">L'engagement corporel (EC) influence positivement l'utilite percue (PU) de la VR en entrainement volleyball.</div>
+            <div class="hyp-ref">Ancre : Pastel et al. (2023) — l'engagement physique en VR augmente la perception d'utilite de l'entrainement immersif.</div>
+          </div>
+        </div>
+        <div class="hyp">
+          <div class="hyp-badge">H7</div>
+          <div>
+            <div class="hyp-main">L'anxiete technologique (AT) influence negativement l'intention d'usage (BI) de la VR immersive en volleyball.</div>
+            <div class="hyp-ref">Ancre : Hornsey & Hibbard (2024) — perception negative de la VR et freins a l'adoption chez les non-inities.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <div class="card-label">Tableau de synthese</div>
+        <table>
+          <tr><th>H</th><th>Relation</th><th>Sens predit</th><th>Type</th></tr>
+          <tr><td>H1</td><td>PEOU → PU</td><td>Positif</td><td>TAM classique</td></tr>
+          <tr><td>H2</td><td>PEOU → BI</td><td>Positif</td><td>TAM classique</td></tr>
+          <tr><td>H3</td><td>PU → BI</td><td>Positif</td><td>TAM classique</td></tr>
+          <tr><td>H4</td><td>IP → BI</td><td>Positif</td><td>Etendu VR sport</td></tr>
+          <tr><td>H5</td><td>PS → BI</td><td>Positif</td><td>Etendu collectif</td></tr>
+          <tr><td>H6</td><td>EC → PU</td><td>Positif</td><td>Etendu immersif</td></tr>
+          <tr><td>H7</td><td>AT → BI</td><td>Negatif</td><td>Etendu moderateur</td></tr>
+        </table>
+      </div>
+
+      <div class="nav-btns">
+        <button class="btn" onclick="go(0)">&larr; Retour</button>
+        <button class="btn primary" onclick="go(2)">Etape 3 — Questionnaire &rarr;</button>
+      </div>
+    </div>
+
+    <!-- PANEL 3 -->
+    <div id="p2" class="panel">
+      <div class="page-header">
+        <div class="page-kicker">Etape 3 — Questionnaire</div>
+        <div class="page-title">28 items adaptes au contexte VR volleyball</div>
+        <p class="page-desc">Items adaptes de Davis (1989) au contexte sportif immersif. Echelle de Likert a 7 points. Section de profil demographique obligatoire. Deploiement via Google Forms.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Echelle de Likert — 7 points</div>
+        <div class="likert-demo">
+          <span class="likert-end">Pas du tout d'accord</span>
+          <div class="likert-pt">1</div>
+          <div class="likert-pt">2</div>
+          <div class="likert-pt">3</div>
+          <div class="likert-pt" style="background:var(--accent-light)">4</div>
+          <div class="likert-pt">5</div>
+          <div class="likert-pt">6</div>
+          <div class="likert-pt">7</div>
+          <span class="likert-end">Tout a fait d'accord</span>
+        </div>
+      </div>
+
+      <div class="item-block">
+        <h4>PEOU — Facilite d'utilisation percue (4 items)</h4>
+        <div class="item-row"><span class="item-n">P1</span><span class="item-text">L'utilisation du casque VR pour m'entrainer au volleyball me semble facile a maitriser.</span></div>
+        <div class="item-row"><span class="item-n">P2</span><span class="item-text">Je pense que je pourrais utiliser ce dispositif VR sans aide particuliere apres une courte prise en main.</span></div>
+        <div class="item-row"><span class="item-n">P3</span><span class="item-text">Les interactions avec l'environnement virtuel de volleyball me semblent intuitives.</span></div>
+        <div class="item-row"><span class="item-n">P4</span><span class="item-text">Il me serait facile de devenir competent dans l'utilisation de ce systeme VR.</span></div>
+      </div>
+
+      <div class="item-block">
+        <h4>PU — Utilite percue (4 items)</h4>
+        <div class="item-row"><span class="item-n">U1</span><span class="item-text">S'entrainer sur ce dispositif VR ameliorerait ma performance tactique reelle en match de volleyball.</span></div>
+        <div class="item-row"><span class="item-n">U2</span><span class="item-text">La VR me permettrait de travailler des situations tactiques impossibles a reproduire a l'entrainement classique.</span></div>
+        <div class="item-row"><span class="item-n">U3</span><span class="item-text">Je pense que ce systeme VR m'aiderait a prendre de meilleures decisions lors de phases de jeu complexes.</span></div>
+        <div class="item-row"><span class="item-n">U4</span><span class="item-text">Dans l'ensemble, l'entrainement en VR serait utile pour progresser en volleyball.</span></div>
+      </div>
+
+      <div class="item-block">
+        <h4>IP — Immersion percue (4 items)</h4>
+        <div class="item-row"><span class="item-n">I1</span><span class="item-text">Lorsque j'utilise la VR, j'ai l'impression d'etre reellement sur un terrain de volleyball.</span></div>
+        <div class="item-row"><span class="item-n">I2</span><span class="item-text">L'environnement virtuel reproduit de facon realiste la salle et le terrain de jeu.</span></div>
+        <div class="item-row"><span class="item-n">I3</span><span class="item-text">Pendant les scenarios VR, j'oublie que je suis dans un environnement simule.</span></div>
+        <div class="item-row"><span class="item-n">I4</span><span class="item-text">La qualite de l'immersion visuelle et sonore renforce mon sentiment de presence dans le jeu.</span></div>
+      </div>
+
+      <div class="item-block">
+        <h4>PS — Presence sociale (4 items)</h4>
+        <div class="item-row"><span class="item-n">S1</span><span class="item-text">Les avatars representant mes coequipiers me donnent l'impression d'evoluer en equipe reelle.</span></div>
+        <div class="item-row"><span class="item-n">S2</span><span class="item-text">Je ressens la presence des autres joueurs dans l'environnement virtuel.</span></div>
+        <div class="item-row"><span class="item-n">S3</span><span class="item-text">Les interactions collectives dans la VR reproduisent la dynamique d'un vrai match de volleyball.</span></div>
+        <div class="item-row"><span class="item-n">S4</span><span class="item-text">Je me sens connecte a mes partenaires de jeu virtuels lors des exercices tactiques.</span></div>
+      </div>
+
+      <div class="item-block">
+        <h4>EC — Engagement corporel (4 items)</h4>
+        <div class="item-row"><span class="item-n">E1</span><span class="item-text">Les mouvements requis par le dispositif VR correspondent aux gestes reels du volleyball.</span></div>
+        <div class="item-row"><span class="item-n">E2</span><span class="item-text">Mon corps est activement engage lors des scenarios VR (deplacement, gestes, posture).</span></div>
+        <div class="item-row"><span class="item-n">E3</span><span class="item-text">L'engagement physique dans la VR me donne l'impression de vraiment m'entrainer.</span></div>
+        <div class="item-row"><span class="item-n">E4</span><span class="item-text">Je percois les exercices VR comme physiquement proches des situations de jeu reelles.</span></div>
+      </div>
+
+      <div class="item-block">
+        <h4>AT — Anxiete technologique (4 items)</h4>
+        <div class="item-row"><span class="item-n">A1</span><span class="item-text">L'idee de porter un casque VR pendant l'entrainement me rend mal a l'aise.</span></div>
+        <div class="item-row"><span class="item-n">A2</span><span class="item-text">Je crains d'eprouver des nausees ou vertiges (cybersickness) lors de l'utilisation de la VR.</span></div>
+        <div class="item-row"><span class="item-n">A3</span><span class="item-text">La technologie VR me semble trop complexe pour etre utilisee sereinement en contexte sportif.</span></div>
+        <div class="item-row"><span class="item-n">A4</span><span class="item-text">J'hesiterais a utiliser un dispositif VR de maniere reguliere en raison de ses contraintes techniques.</span></div>
+      </div>
+
+      <div class="item-block">
+        <h4>BI — Intention d'usage (4 items)</h4>
+        <div class="item-row"><span class="item-n">B1</span><span class="item-text">J'ai l'intention d'utiliser la VR pour m'entrainer au volleyball si ce dispositif etait disponible dans mon club.</span></div>
+        <div class="item-row"><span class="item-n">B2</span><span class="item-text">Je recommanderais l'utilisation de la VR a mes coequipiers pour ameliorer leurs performances tactiques.</span></div>
+        <div class="item-row"><span class="item-n">B3</span><span class="item-text">Je serais pret a consacrer une partie de mes seances d'entrainement a l'utilisation de la VR.</span></div>
+        <div class="item-row"><span class="item-n">B4</span><span class="item-text">Si mon entraineur proposait des seances VR, je participerais regulierement.</span></div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <div class="card-label">Profil demographique (section obligatoire)</div>
+        <table>
+          <tr><th>Variable</th><th>Format</th></tr>
+          <tr><td>Age</td><td>Champ numerique (annees)</td></tr>
+          <tr><td>Sexe</td><td>Homme / Femme / Autre / Prefere ne pas repondre</td></tr>
+          <tr><td>Niveau volleyball</td><td>Debutant / Intermediaire / Avance / Competiteur</td></tr>
+          <tr><td>Experience VR</td><td>Jamais utilise / 1-2 fois / Utilisateur regulier</td></tr>
+          <tr><td>Club ou structure</td><td>Champ libre (optionnel)</td></tr>
+        </table>
+      </div>
+
+      <div class="nav-btns">
+        <button class="btn" onclick="go(1)">&larr; Retour</button>
+        <button class="btn primary" onclick="go(3)">Etape 4 — Collecte &rarr;</button>
+      </div>
+    </div>
+
+    <!-- PANEL 4 -->
+    <div id="p3" class="panel">
+      <div class="page-header">
+        <div class="page-kicker">Etape 4 — Collecte des donnees</div>
+        <div class="page-title">n minimum 80 repondants, anonymisation RGPD</div>
+        <p class="page-desc">La collecte vise au moins 80 repondants pour valider les analyses PLS-SEM. Les donnees sont anonymisees. Duree de collecte : deux semaines.</p>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat-box"><div class="stat-val">80+</div><div class="stat-lbl">Repondants minimum</div><div class="stat-threshold">Seuil PLS-SEM</div></div>
+        <div class="stat-box"><div class="stat-val">2</div><div class="stat-lbl">Semaines de collecte</div></div>
+        <div class="stat-box"><div class="stat-val">28</div><div class="stat-lbl">Items + 5 demo</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Populations cibles</div>
+        <table>
+          <tr><th>Population</th><th>Justification</th><th>Canal</th></tr>
+          <tr><td>Volleyeurs amateurs adultes</td><td>Population directe du gap identifie en Bloc 1</td><td>Clubs, associations sportives</td></tr>
+          <tr><td>Etudiants STAPS / TDTS</td><td>Familiers avec les technologies sportives</td><td>ISS Settat, autres instituts</td></tr>
+          <tr><td>Coaches et professionnels</td><td>Perspective d'adoption institutionnelle</td><td>Federations, academies</td></tr>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Protocole RGPD</div>
+        <div class="item-block" style="margin-bottom:8px">
+          <h4>Consentement eclaire</h4>
+          <p style="font-size:12px;color:var(--text-secondary)">Inclure en tete de formulaire : objectif de l'etude, anonymat garanti, droit de retrait, utilisation strictement academique. Aucune donnee personnelle identifiable.</p>
+        </div>
+        <div class="item-block" style="margin-bottom:8px">
+          <h4>Anonymisation</h4>
+          <p style="font-size:12px;color:var(--text-secondary)">Ne pas collecter : nom, prenom, email, telephone. Les variables demographiques retenues (age, sexe, niveau) ne permettent pas l'identification individuelle.</p>
+        </div>
+        <div class="item-block" style="margin-bottom:0">
+          <h4>Stockage et traitement</h4>
+          <p style="font-size:12px;color:var(--text-secondary)">Export CSV depuis Google Forms. Traitement dans SmartPLS 4 ou SPSS/JASP. Suppression des donnees brutes apres soutenance.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Verifications avant analyse</div>
+        <table>
+          <tr><th>Verification</th><th>Action corrective</th></tr>
+          <tr><td>n ≥ 80 atteint</td><td>Prolonger la collecte d'une semaine si necessaire</td></tr>
+          <tr><td>Reponses incompletes (&lt; 10% manquants)</td><td>Exclure les repondants avec plus de 3 items manquants</td></tr>
+          <tr><td>Pas de straight-lining</td><td>Identifier et exclure les reponses uniformes suspectes</td></tr>
+          <tr><td>Distribution Likert acceptable</td><td>Verifier l'absence d'effet plafond ou plancher extremes</td></tr>
+        </table>
+      </div>
+
+      <div class="nav-btns">
+        <button class="btn" onclick="go(2)">&larr; Retour</button>
+        <button class="btn primary" onclick="go(4)">Etape 5 — Analyse &rarr;</button>
+      </div>
+    </div>
+
+    <!-- PANEL 5 -->
+    <div id="p4" class="panel">
+      <div class="page-header">
+        <div class="page-kicker">Etape 5 — Analyse statistique</div>
+        <div class="page-title">Modele de mesure et modele structurel PLS-SEM</div>
+        <p class="page-desc">Deux phases : d'abord la fiabilite et validite des construits (modele de mesure), puis le test des 7 hypotheses via PLS-SEM avec SmartPLS 4 (modele structurel).</p>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Phase 1 — Modele de mesure</div>
+        <div class="stat-row" style="margin-top:10px">
+          <div class="stat-box"><div class="stat-val">&gt; 0.7</div><div class="stat-lbl">Alpha de Cronbach</div><div class="stat-threshold">Fiabilite interne</div></div>
+          <div class="stat-box"><div class="stat-val">&gt; 0.5</div><div class="stat-lbl">AVE</div><div class="stat-threshold">Validite convergente</div></div>
+          <div class="stat-box"><div class="stat-val">&gt; 0.7</div><div class="stat-lbl">CR</div><div class="stat-threshold">Fiabilite composite</div></div>
+        </div>
+
+        <div class="item-block" style="margin-bottom:8px">
+          <h4>Alpha de Cronbach (&gt; 0.7)</h4>
+          <p style="font-size:12px;color:var(--text-secondary)">Mesure si les 4 items d'un meme construit capturent bien la meme dimension. Un alpha de 0.80 sur les items PEOU signifie que les 4 questions sont coherentes. En dessous de 0.7, les items doivent etre revises.</p>
+        </div>
+        <div class="item-block" style="margin-bottom:8px">
+          <h4>AVE — Average Variance Extracted (&gt; 0.5)</h4>
+          <p style="font-size:12px;color:var(--text-secondary)">Validite convergente : la variance expliquee par le construit doit depasser 50%. Si AVE(IP) = 0.62, les 4 items Immersion Percue capturent 62% de la variance commune. Seuil de Fornell & Larcker (1981).</p>
+        </div>
+        <div class="item-block" style="margin-bottom:8px">
+          <h4>CR — Composite Reliability (&gt; 0.7, &lt; 0.95)</h4>
+          <p style="font-size:12px;color:var(--text-secondary)">Alternative plus robuste a l'Alpha pour PLS. Doit depasser 0.7 et rester sous 0.95 — au-dessus, les items sont redondants.</p>
+        </div>
+        <div class="item-block" style="margin-bottom:0">
+          <h4>HTMT — Validite discriminante (&lt; 0.85)</h4>
+          <p style="font-size:12px;color:var(--text-secondary)">Verifie que chaque construit est distinct des autres. HTMT entre IP et PS doit etre inferieur a 0.85 pour confirmer qu'ils mesurent bien deux dimensions separees.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Phase 2 — Modele structurel</div>
+        <table style="margin-top:8px">
+          <tr><th>Indicateur</th><th>Interpretation</th><th>Seuil validation H</th></tr>
+          <tr><td>Beta standardise (β)</td><td>Force et sens de la relation</td><td>Signe conforme au sens predit</td></tr>
+          <tr><td>p-value</td><td>Signification statistique</td><td>p &lt; 0.05</td></tr>
+          <tr><td>t-statistique</td><td>Via bootstrapping 5000 iterations</td><td>t &gt; 1.96</td></tr>
+          <tr><td>R²</td><td>Variance expliquee de BI</td><td>&gt; 0.1 acceptable, &gt; 0.3 bon</td></tr>
+          <tr><td>f²</td><td>Taille de l'effet de chaque predicteur</td><td>0.02 petit, 0.15 moyen, 0.35 grand</td></tr>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Tableau de synthese des hypotheses (a remplir apres collecte)</div>
+        <table style="margin-top:8px">
+          <tr><th>H</th><th>Relation</th><th>β</th><th>p-value</th><th>Statut</th></tr>
+          <tr><td>H1</td><td>PEOU → PU</td><td>—</td><td>—</td><td>A determiner</td></tr>
+          <tr><td>H2</td><td>PEOU → BI</td><td>—</td><td>—</td><td>A determiner</td></tr>
+          <tr><td>H3</td><td>PU → BI</td><td>—</td><td>—</td><td>A determiner</td></tr>
+          <tr><td>H4</td><td>IP → BI</td><td>—</td><td>—</td><td>A determiner</td></tr>
+          <tr><td>H5</td><td>PS → BI</td><td>—</td><td>—</td><td>A determiner</td></tr>
+          <tr><td>H6</td><td>EC → PU</td><td>—</td><td>—</td><td>A determiner</td></tr>
+          <tr><td>H7</td><td>AT → BI</td><td>—</td><td>—</td><td>A determiner</td></tr>
+        </table>
+        <p style="font-size:11px;color:var(--text-muted);margin-top:8px">Logiciel : SmartPLS 4 — Bootstrapping 5000 iterations — Significance a 95%</p>
+      </div>
+
+      <div class="nav-btns">
+        <button class="btn" onclick="go(3)">&larr; Retour</button>
+        <button class="btn primary" onclick="go(5)">Etape 6 — Implications &rarr;</button>
+      </div>
+    </div>
+
+    <!-- PANEL 6 -->
+    <div id="p5" class="panel">
+      <div class="page-header">
+        <div class="page-kicker">Etape 6 — Implications design</div>
+        <div class="page-title">Du resultat TAM au prototype Unity</div>
+        <p class="page-desc">Chaque hypothese validee genere une recommandation concrete pour le prototype Bloc 3. C'est la jonction critique entre la theorie et l'ingenierie. Sans cette etape, le Bloc 3 ne peut pas etre justifie scientifiquement.</p>
+      </div>
+
+      <div class="impl">
+        <div class="impl-badge">H3</div>
+        <div>
+          <div class="impl-title">Si PU → BI validee : rendre l'utilite visible dans le prototype</div>
+          <div class="impl-body">Integrer un tableau de bord de performance tactique en temps reel dans Unity affichant les progres du joueur (taux de bonnes decisions, temps de reaction, comparaison session a session). L'utilisateur doit percevoir immediatement que la VR l'aide a progresser.</div>
+        </div>
+      </div>
+
+      <div class="impl">
+        <div class="impl-badge">H4</div>
+        <div>
+          <div class="impl-title">Si IP → BI validee : maximiser la qualite d'immersion</div>
+          <div class="impl-body">Integrer un audio 3D spatial (sons du terrain, communications d'equipe directionnels), un retour haptique lors des contacts ballon, et une skybox haute resolution reproduisant une salle de volleyball. Eclairage HDRP/URP dans Unity pour la coherence visuelle.</div>
+        </div>
+      </div>
+
+      <div class="impl">
+        <div class="impl-badge">H5</div>
+        <div>
+          <div class="impl-title">Si PS → BI validee : integrer des avatars de coequipiers reactifs</div>
+          <div class="impl-body">Developper des avatars de coequipiers animes avec comportements reactifs (positionnement selon la tactique, gestuelles de communication). Ajouter un systeme de signaux gestuels entre joueurs virtuels pour simuler la coordination collective.</div>
+        </div>
+      </div>
+
+      <div class="impl">
+        <div class="impl-badge">H6</div>
+        <div>
+          <div class="impl-title">Si EC → PU validee : exploiter pleinement le 6DoF</div>
+          <div class="impl-body">Concevoir des interactions physiques fidelisees dans Unity XR Toolkit. Les joueurs doivent se deplacer, lever les bras, orienter leur corps selon les situations tactiques. Le tracking 6 degres de liberte doit etre pleinement exploite.</div>
+        </div>
+      </div>
+
+      <div class="impl">
+        <div class="impl-badge">H7</div>
+        <div>
+          <div class="impl-title">Si AT → BI validee : integrer un mode onboarding progressif</div>
+          <div class="impl-body">Commencer par des scenarios courts (2-3 minutes) sans mouvements brusques. Ajouter un indicateur de confort permettant a l'utilisateur de signaler une gene et d'interrompre la session. Tutorial interactif avant chaque premiere utilisation.</div>
+        </div>
+      </div>
+
+      <div class="impl">
+        <div class="impl-badge">H1</div>
+        <div>
+          <div class="impl-title">Si PEOU → PU validee : interface zero apprentissage</div>
+          <div class="impl-body">Navigation par gestes intuitifs, tutoriel de 60 secondes, menus accessibles d'une seule main. L'effort cognitif lie au dispositif ne doit pas interferer avec l'entrainement tactique. Tester l'interface avec des non-initiés avant finalisation.</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <div class="card-label">Recapitulatif — Livrable Bloc 2</div>
+        <table>
+          <tr><th>Element</th><th>Contenu</th><th>Checkpoint</th></tr>
+          <tr><td>Modele conceptuel</td><td>6 construits, 7 hypotheses, schema draw.io</td><td>CP3 — Fin Sem. 5</td></tr>
+          <tr><td>Questionnaire</td><td>28 items Likert 7 pts + 5 demo, Google Forms</td><td>CP3 — Fin Sem. 5</td></tr>
+          <tr><td>Collecte</td><td>n ≥ 80, anonymise RGPD, 2 semaines</td><td>Sem. 6</td></tr>
+          <tr><td>Analyse PLS-SEM</td><td>Alpha, AVE, CR, HTMT, β, p-values, SmartPLS 4</td><td>CP4 — Fin Sem. 7</td></tr>
+          <tr><td>Implications design</td><td>6 recommandations ancrees sur les H validees</td><td>CP4 — Fin Sem. 7</td></tr>
+        </table>
+      </div>
+
+      <div class="nav-btns">
+        <button class="btn" onclick="go(4)">&larr; Retour</button>
+        <span></span>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+function go(n) {
+  document.querySelectorAll('.panel').forEach((p, i) => p.classList.toggle('active', i === n));
+  document.querySelectorAll('.nav-item').forEach((b, i) => b.classList.toggle('active', i === n));
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
